@@ -60,7 +60,12 @@ def get_all_gt_recipes(train_set_path, test_set_path, val_set_path, processed_re
     return recipes#, all_comments
 
 
-def get_all_comments(train_set_path, test_set_path, val_set_path):
+def get_all_comments(train_set_path, test_set_path, val_set_path, extended_recipes_path):
+    if os.path.isfile(extended_recipes_path):
+        with open(extended_recipes_path, "rb") as extended_recipes_file:
+            all_comments = pickle.load(extended_recipes_file)
+            return all_comments
+
     with open(train_set_path, "rb") as train_comments_file:
         train_comments = pickle.load(train_comments_file)
     with open(test_set_path, "rb") as test_comments_file:
@@ -69,6 +74,10 @@ def get_all_comments(train_set_path, test_set_path, val_set_path):
         val_comments = pickle.load(val_comments_file)
 
     all_comments = train_comments + test_comments + val_comments
+
+    with open(extended_recipes_path, "wb") as extended_recipes_path:
+        pickle.dump(all_comments, extended_recipes_path)
+
     return all_comments
 
 def get_1m_recipes(total_recipes_graph):
@@ -707,6 +716,7 @@ def main():
 
     # ALL_PAIRS_PATH = os.path.abspath("./outputs/all_pairs.pkl")
     # ALL_MUTUAL_INFO_PATH = os.path.abspath("./outputs/all_mutual_info.pkl")
+    EXTENDED_RECIPES_PATH = os.path.abspath("./inputs/extended_recipes.pkl")
 
     MUTUAL_INFO_DICT_PATH = "./outputs/mutual_info_dict.pkl"
     MUTUAL_INFO_DICT_PATH_WITH_SELF_INFO = "./outputs/mutual_info_dict_with_self_info.pkl"
@@ -759,7 +769,7 @@ def main():
         # all_mutual_info = get_all_mutual_info(all_pairs, recipe_ingredient_df, ALL_MUTUAL_INFO_PATH)
 
         extended_recipes = get_all_comments(TRAIN_COMMENTS_PATH, TEST_COMMENTS_PATH,
-                                     VAL_COMMENTS_PATH)
+                                     VAL_COMMENTS_PATH, EXTENDED_RECIPES_PATH)
         # make bool to make the computation faster
         recipe_ingredient_df_bool = recipe_ingredient_df.astype(bool)
         # test_for_recipe("b78b1bffd0", extended_recipes, recipe_ingredient_df_bool, MUTUAL_INFO_DICT_PATH)

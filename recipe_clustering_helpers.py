@@ -76,13 +76,14 @@ def getRecipeIdsForSubTuples(recipes):
     recipe_ids_per_sub_tuple = {}
     for recipe in recipes:
         recipe_id = recipe["id"]
-        sub_tuple = recipe["subs"]
-        if len(sub_tuple) > 2 or isinstance(sub_tuple, list):
-            pass
+        sub_tuple = tuple(recipe["subs"])
+        if len(sub_tuple) > 2:
+            continue
         if sub_tuple in list(recipe_ids_per_sub_tuple.keys()):
             recipe_ids_per_sub_tuple[sub_tuple].append(recipe_id)
         else:
             recipe_ids_per_sub_tuple[sub_tuple] = []
+            recipe_ids_per_sub_tuple[sub_tuple].append(recipe_id)
     return recipe_ids_per_sub_tuple
 
 if __name__ == "__main__":
