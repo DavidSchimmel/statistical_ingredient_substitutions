@@ -86,9 +86,15 @@ other
 [[Question:TE]]
 [[ID:MC@@sample_id@@usersuggestion]]
 What Substitution do you suggest instead (if you answered other)?
+
+[[Question:TE]]
+[[ID:MC@@sample_id@@mainingr]]
+Is @@main_ingredient@@ the main ingredient of the recipe? If not, which one is the main ingredient?
+
 """
 
     def __init__(self, gt_sub: list,
+                 assumed_main_ingredient: str,
                  recipe_title: str,
                  recipe_ingredient_list: list,
                  recipe_instruction_list: list,
@@ -96,6 +102,7 @@ What Substitution do you suggest instead (if you answered other)?
                  sample_id: int,
                  do_use_advanced: bool) -> None:
         self.gt_sub = [ingr.replace("_", " ") for ingr in gt_sub]
+        self.assumed_main_ingredient = assumed_main_ingredient
         self.recipe_title = recipe_title
         self.recipe_ingredient_list = [ingr.replace("_", " ") for ingr in recipe_ingredient_list]
         self.recipe_instruction_list = recipe_instruction_list
@@ -106,6 +113,7 @@ What Substitution do you suggest instead (if you answered other)?
     def __str__(self) -> str:
         text_content = self.TEXT_CONTENT_ADVANCED if self.do_use_advanced else self.TEXT_CONTENT
         text_content = text_content.replace("@@sample_id@@", str(self.sample_id)) \
+                                   .replace("@@main_ingredient@@", str(self.assumed_main_ingredient)) \
                                    .replace("@@recipe_title@@", self.recipe_title) \
                                    .replace("@@ingredient_list@@", ";\n".join(self.recipe_ingredient_list)) \
                                    .replace("@@instruction_list@@", ";\n".join(self.recipe_instruction_list)) \
@@ -125,10 +133,11 @@ def createQualtrixSurveyText(survey_data, do_use_advanced):
 
     for gt_sub, recipe, sample_id in survey_data:
         question_block = IngredientSubstitutionQuestionBlock(gt_sub,
+                                                             recipe["main_ingredient"]
                                                              recipe["title"],
                                                              recipe["original_ingredients"],
                                                              recipe["instructions"],
-                                                             ["A", "B", "C"],
+                                                             recipe["substitute_suggestions"],
                                                              sample_id,
                                                              do_use_advanced)
 
