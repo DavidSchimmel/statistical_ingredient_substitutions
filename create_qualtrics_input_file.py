@@ -163,5 +163,3 @@ if __name__ == "__main__":
     if not DRY_RUN:
         with open(QUALTRICS_SURVEY_TEXT_FILE_PATH, "w") as qualtrics_survey_file:
             qualtrics_survey_file.write(survey_text_content)
-
-    pass
