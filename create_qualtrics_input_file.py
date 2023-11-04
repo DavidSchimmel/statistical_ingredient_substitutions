@@ -164,9 +164,10 @@ What substitution do you suggest instead (if you answered other)?
         return text_content
 
 
-def createQualtrixSurveyText(survey_data, do_use_advanced):
-    survey_string = ""
+def createQualtrixSurveyTexts(survey_data, chunk_limit = 50, do_use_advanced = True):
+    survey_strings = [""]
 
+    n_samples_per_chunk_counter = 0
     for gt_sub, recipe, sample_id in survey_data:
         question_block = IngredientSubstitutionQuestionBlock(
             gt_sub,
@@ -179,12 +180,17 @@ def createQualtrixSurveyText(survey_data, do_use_advanced):
             do_use_advanced,
         )
 
-        survey_string += str(question_block) + "\n\n"
+        survey_strings[-1] += str(question_block) + "\n\n"
 
-        if sample_id > 2:
-            return survey_string
+        n_samples_per_chunk_counter += 1
+        if n_samples_per_chunk_counter >= chunk_limit:
+            survey_strings.append("")
+            n_samples_per_chunk_counter = 0
 
-    return survey_string
+
+    if not survey_strings[-1]:
+        survey_strings.pop()
+    return survey_strings
 
 
 if __name__ == "__main__":
@@ -192,15 +198,22 @@ if __name__ == "__main__":
 
     QUALTRICS_SURVEY_DATA_ORIG_FILE_PATH = os.path.abspath("./inputs/suvey_question_set_500.json")
     QUALTRICS_SURVEY_DATA_FILE_PATH = os.path.abspath("./inputs/survey_recipes_cgpt_suggestions.json")
-    QUALTRICS_SURVEY_TEXT_FILE_PATH = os.path.abspath("./outputs/survey_500.txt")
+    QUALTRICS_SURVEY_TEXT_DIR_PATH = os.path.abspath("./outputs/survey_import_files/")
 
     with open(QUALTRICS_SURVEY_DATA_FILE_PATH, "r") as qualstrics_data_file:
         survey_data = json.load(qualstrics_data_file)
 
-    survey_text_content = createQualtrixSurveyText(
-        survey_data, True
+    survey_text_contents = createQualtrixSurveyTexts(
+        survey_data, 50, True
     )  # .replace("\\n", "\n").replace("\n", "\n")
 
     if not DRY_RUN:
-        with open(QUALTRICS_SURVEY_TEXT_FILE_PATH, "w") as qualtrics_survey_file:
-            qualtrics_survey_file.write(survey_text_content)
+        # if the dir does not exist yet, create it
+        if not os.path.exists(QUALTRICS_SURVEY_TEXT_DIR_PATH):
+            os.makedirs(QUALTRICS_SURVEY_TEXT_DIR_PATH)
+
+        for chunk, survey_text_content in enumerate(survey_text_contents):
+            file_name = f"survey_500-{chunk}.txt"
+            file_path = os.path.join(QUALTRICS_SURVEY_TEXT_DIR_PATH, file_name)
+            with open(file_path, "w") as qualtrics_survey_file:
+                qualtrics_survey_file.write(survey_text_content)
