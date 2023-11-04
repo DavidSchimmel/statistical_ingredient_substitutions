@@ -4,7 +4,7 @@ import os
 class IngredientSubstitutionQuestionBlock:
     Q_FIT_TEXT = "Does the suggested substitution fit the recipe?"
     Q_MAJOR_CHANGE_TEXT = "Would exchanging the ingredients require major changes to the recipe?"
-    Q_SUBS_SELECTION = "Which of the following substitutions would you chose for the main ingredient of the recipe?"
+    Q_SUBS_SELECTION = "Which of the following substitutions would you chose for @@main_ingredient@@"
 
     TEXT_CONTENT = """[[Block:@@sample_id@@]]
 
@@ -73,6 +73,10 @@ no
 yes
 no
 
+[[Question:TE]]
+[[ID:MC@@sample_id@@mainingr]]
+Is @@main_ingredient@@ the main ingredient of the recipe? If not, which one is the main ingredient?
+
 [[Question:MC:SingleAnswer:Horizontal]]
 [[ID:MC@@sample_id@@selection]]
 @@Q_SUBS_SELECTION@@
@@ -85,11 +89,7 @@ other
 
 [[Question:TE]]
 [[ID:MC@@sample_id@@usersuggestion]]
-What Substitution do you suggest instead (if you answered other)?
-
-[[Question:TE]]
-[[ID:MC@@sample_id@@mainingr]]
-Is @@main_ingredient@@ the main ingredient of the recipe? If not, which one is the main ingredient?
+What substitution do you suggest instead (if you answered other)?
 
 """
 
@@ -113,17 +113,17 @@ Is @@main_ingredient@@ the main ingredient of the recipe? If not, which one is t
     def __str__(self) -> str:
         text_content = self.TEXT_CONTENT_ADVANCED if self.do_use_advanced else self.TEXT_CONTENT
         text_content = text_content.replace("@@sample_id@@", str(self.sample_id)) \
-                                   .replace("@@main_ingredient@@", str(self.assumed_main_ingredient)) \
                                    .replace("@@recipe_title@@", self.recipe_title) \
                                    .replace("@@ingredient_list@@", ";\n".join(self.recipe_ingredient_list)) \
                                    .replace("@@instruction_list@@", ";\n".join(self.recipe_instruction_list)) \
                                    .replace("@@gt_sub@@", " -> ".join(self.gt_sub)) \
-                                   .replace("@@Q_FIT_TEXT@@", self.Q_MAJOR_CHANGE_TEXT) \
+                                   .replace("@@Q_FIT_TEXT@@", self.Q_FIT_TEXT) \
                                    .replace("@@Q_MAJOR_CHANGE_TEXT@@", self.Q_MAJOR_CHANGE_TEXT) \
-                                   .replace("@@Q_SUBS_SELECTION@@", self.Q_MAJOR_CHANGE_TEXT) \
+                                   .replace("@@Q_SUBS_SELECTION@@", self.Q_SUBS_SELECTION) \
                                    .replace("@@substitute_suggestion_1@@", self.sub_options_list[0]) \
                                    .replace("@@substitute_suggestion_2@@", self.sub_options_list[1]) \
-                                   .replace("@@substitute_suggestion_3@@", self.sub_options_list[2])
+                                   .replace("@@substitute_suggestion_3@@", self.sub_options_list[2]) \
+                                   .replace("@@main_ingredient@@", str(self.assumed_main_ingredient))
 
         return text_content
 
@@ -152,8 +152,8 @@ def createQualtrixSurveyText(survey_data, do_use_advanced):
 if __name__ == "__main__":
     DRY_RUN = False
 
-    QUALTRICS_SURVEY_DATA_FILE_PATH = os.path.abspath("C:\\UM\\Repos\\statistical_ingredient_substitutions\\inputs\\suvey_question_set_500.json")
-    QUALTRICS_SURVEY_TEXT_FILE_PATH = os.path.abspath("C:\\UM\\Repos\\statistical_ingredient_substitutions\\outputs\\suvey_500.txt")
+    QUALTRICS_SURVEY_DATA_FILE_PATH = os.path.abspath("./inputs/suvey_question_set_500.json")
+    QUALTRICS_SURVEY_TEXT_FILE_PATH = os.path.abspath("./outputs/survey_500.txt")
 
     with open(QUALTRICS_SURVEY_DATA_FILE_PATH, "r") as qualstrics_data_file:
         survey_data = json.load(qualstrics_data_file)
