@@ -10,7 +10,15 @@ from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances, man
 from itertools import combinations
 
 
-def get_graph_nodes(graph_nodes_path):
+def get_graph_nodes(graph_nodes_path: str) -> list:
+    """Load the data for node names for the flavorgraph nodes.
+
+    Args:
+        nodes_path (str): Nodes as they are in the flavorgraph
+
+    Returns:
+        list: The actual list of distinct node labels (i.e. ingredient labels)
+    """
     graph_nodes = []
     with open(graph_nodes_path, 'r', newline='') as graph_nodes_file:
         csvreader = csv.reader(graph_nodes_file)
