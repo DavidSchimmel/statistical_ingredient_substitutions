@@ -3,10 +3,15 @@ import os
 import json
 import regex
 
+import spacy
 import docx
 
-
+from nltk.stem import PorterStemmer
 from calc_recipe_ingredient_info_distances import get_graph_nodes
+
+# initialize the nlp stuff
+nlp = spacy.load("en_core_web_sm")
+stemmer = PorterStemmer()
 
 def get_text(file_name):
     document = docx.Document(file_name)
@@ -48,6 +53,147 @@ def parse_doc_to_recipe(file_name):
 
     return recipe
 
+# Function to extract the normalized main keyword in singular form (as suggested by chatgippity)
+def extract_main_keyword_singular(ingredient):
+    # Process the ingredient text using spaCy
+    doc = nlp(ingredient)
+
+    # Extract the main noun or entity
+    main_keywords = [token.text.lower() for token in doc if token.pos_ == "NOUN"]
+
+    # If no noun is found, consider the whole ingredient text
+    if not main_keywords:
+        main_keywords = [token.text.lower() for token in doc]
+
+    # Perform stemming to get the singular form
+    singular_keywords = [stemmer.stem(word) for word in main_keywords]
+
+    # Join the words to get the normalized main keyword in singular form
+    normalized_main_keyword_singular = " ".join(singular_keywords)
+
+    return normalized_main_keyword_singular
+
+def executeHardcodedIngredientMappings(unmatched_ingredient_labels):
+    sugar = []
+    lemon = []
+    flour = []
+    onion = []
+    parsley = []
+    basil = []
+    tomato = []
+    vanilla = []
+    chilli = []
+    coriander = []
+    oatmeal = []
+    cream = []
+    thyme = []
+    almond = []
+    yeast = []
+    vinegar = []
+    beef = []
+    pork = []
+    baking = []
+    turkey = []
+    orange = []
+    potato = []
+    lime = []
+    chicken = []
+    mint = []
+    rosemary = []
+    spinach = []
+    nutmeg = []
+
+    for unmatched_ingredient in unmatched_ingredient_labels:
+        if "sugar" in unmatched_ingredient:
+            sugar.append(unmatched_ingredient)
+        if "lemon" in unmatched_ingredient:
+            lemon.append(unmatched_ingredient)
+        if "flour" in unmatched_ingredient:
+            flour.append(unmatched_ingredient)
+        if "onion" in unmatched_ingredient:
+            onion.append(unmatched_ingredient)
+        if "parsley" in unmatched_ingredient:
+            parsley.append(unmatched_ingredient)
+        if "basil" in unmatched_ingredient:
+            basil.append(unmatched_ingredient)
+        if "tomato" in unmatched_ingredient:
+            tomato.append(unmatched_ingredient)
+        if "vanilla" in unmatched_ingredient:
+            vanilla.append(unmatched_ingredient)
+        if "cream" in unmatched_ingredient:
+            cream.append(unmatched_ingredient)
+        if "coriander" in unmatched_ingredient:
+            coriander.append(unmatched_ingredient)
+        if "chilli" in unmatched_ingredient:
+            chilli.append(unmatched_ingredient)
+        if "thyme" in unmatched_ingredient:
+            thyme.append(unmatched_ingredient)
+        if "almond" in unmatched_ingredient:
+            almond.append(unmatched_ingredient)
+        if "oatmeal" in unmatched_ingredient:
+            oatmeal.append(unmatched_ingredient)
+        if "yeast" in unmatched_ingredient:
+            yeast.append(unmatched_ingredient)
+        if "vinegar" in unmatched_ingredient:
+            vinegar.append(unmatched_ingredient)
+
+        if "beef" in unmatched_ingredient:
+            beef.append(unmatched_ingredient)
+        if "pork" in unmatched_ingredient:
+            pork.append(unmatched_ingredient)
+        if "baking" in unmatched_ingredient:
+            baking.append(unmatched_ingredient)
+        if "turkey" in unmatched_ingredient:
+            turkey.append(unmatched_ingredient)
+        if "orange" in unmatched_ingredient:
+            orange.append(unmatched_ingredient)
+        if "potato" in unmatched_ingredient:
+            potato.append(unmatched_ingredient)
+        if "lime" in unmatched_ingredient:
+            lime.append(unmatched_ingredient)
+        if "chicken" in unmatched_ingredient:
+            chicken.append(unmatched_ingredient)
+        if "mint" in unmatched_ingredient:
+            mint.append(unmatched_ingredient)
+        if "rosemary" in unmatched_ingredient:
+            rosemary.append(unmatched_ingredient)
+        if "spinach" in unmatched_ingredient:
+            spinach.append(unmatched_ingredient)
+        if "nutmeg" in unmatched_ingredient:
+            nutmeg.append(unmatched_ingredient)
+
+    # unmatched_ingredient_labels.append(sugar)
+    # unmatched_ingredient_labels.append(lemon)
+    # unmatched_ingredient_labels.append(flour)
+    # unmatched_ingredient_labels.append(onion)
+    # unmatched_ingredient_labels.append(parsley)
+    # unmatched_ingredient_labels.append(basil)
+    # unmatched_ingredient_labels.append(tomato)
+    # unmatched_ingredient_labels.append(vanilla)
+    # unmatched_ingredient_labels.append(cream)
+    # unmatched_ingredient_labels.append(coriander)
+    # unmatched_ingredient_labels.append(chilli)
+    # unmatched_ingredient_labels.append(thyme)
+    # unmatched_ingredient_labels.append(almond)
+    # unmatched_ingredient_labels.append(oatmeal)
+    # unmatched_ingredient_labels.append(yeast)
+    # unmatched_ingredient_labels.append(vinegar)
+
+    # unmatched_ingredient_labels.append(beef)
+    # unmatched_ingredient_labels.append(pork)
+    # unmatched_ingredient_labels.append(baking)
+    # unmatched_ingredient_labels.append(turkey)
+    # unmatched_ingredient_labels.append(orange)
+    # unmatched_ingredient_labels.append(potato)
+    # unmatched_ingredient_labels.append(lime)
+    # unmatched_ingredient_labels.append(chicken)
+    # unmatched_ingredient_labels.append(mint)
+    # unmatched_ingredient_labels.append(rosemary)
+    # unmatched_ingredient_labels.append(spinach)
+    # unmatched_ingredient_labels.append(nutmeg)
+
+    return unmatched_ingredient_labels
+
 def parse_ingredients(recipe: list, ingr_labels_raw_to_r1m: dict, ingr_labels_r1m_to_raw: dict) -> tuple:
     regex_measurements_without_fractions = r"\d+(\.\d+)?\s*(?:fluid\s*|fl\.?\s*|dry\s*)?(?:(?:teaspoons?|tsps?)|t\.?\s*sp\.?\s*|tablespoons?|tbsps?|tbsp\.?|cups?|c\.?\s*|ounces?|oz\.?|pounds?|lbs?|grams?|g\.?|kilograms?|kg\.?|milliliters?|ml\.?|liters?|l\.?|quarts?|qts?|gallons?|gals?|pinch(?:es)?|dashes?)\s*(?:(?:of|in|for)\s*)?"
     regex_measurements_with_fractions = r"\d+(\s*\d+/\d+)?\s*(?:fluid\s*|fl\.?\s*|dry\s*)?(?:(?:teaspoons?|tsps?)|t\.?\s*sp\.?\s*|tablespoons?|tbsps?|tbsp\.?|cups?|c\.?\s*|ounces?|oz\.?|pounds?|lbs?|grams?|g\.?|kilograms?|kg\.?|milliliters?|ml\.?|liters?|l\.?|quarts?|qts?|gallons?|gals?|pinch(?:es)?|dashes?)\s*(?:(?:of|in|for)\s*)?"
@@ -67,6 +213,7 @@ def parse_ingredients(recipe: list, ingr_labels_raw_to_r1m: dict, ingr_labels_r1
         "egg yolks": "egg",
         "medium eggs-": "egg",
         "egg white, lightly beaten": "egg",
+        "eggs\u00a0(at room temperature)": "egg",
         "large eggs, beaten": "egg",
         "large eggs, separated": "egg",
         "egg, beaten": "egg",
@@ -233,6 +380,229 @@ def parse_ingredients(recipe: list, ingr_labels_raw_to_r1m: dict, ingr_labels_r1
         "fresh yeast": "yeast",
         "balsamic vinegar": "vinegar",
         "vinegar": "vinegar",
+        "finely ground -lean minced beef": "beef",
+        "minced beef": "beef",
+        "cubed beef fillet": "beef",
+        "leg of pork (boneless)": "pork",
+        "minced  pork": "pork",
+        "pork chops": "pork",
+        "baking soda-1 \u00e7ay ka\u015f\u0131\u011f\u0131 kabartma tozu": "baking powder",
+        "baking powder": "baking powder",
+        "whole turkey": "turkey",
+        "turkey thigh": "turkey",
+        "zest of an orange-1 orta boy portakal": "orange",
+        "orange": "orange",
+        "oranges \u2013cut into two and sliced": "orange",
+        "zest of an orange\u00a0\u00a0-1 orta boy portakal kabu\u011fu rendesi": "orange",
+        "zest of an orange": "orange",
+        "baking potatoes": "potato",
+        "potatoes, very thinly sliced": "potato",
+        "potatoes": "potato",
+        "lrg.potato,peeled&diced into 1cm cubes": "potato",
+        "potatoes-": "potato",
+        "limes, zest and juice-2 adet orta boy limon suyu": "lime",
+        "lime, cut into thin slices": "lime",
+        "juice of lime": "lime",
+        "chicken drumsticks": "chicken",
+        "boneless chicken breast , cut into bite-sized pieces": "chicken",
+        "chicken portions": "chicken",
+        "whole chicken": "chicken",
+        "chicken breasts": "chicken",
+        "mint leaves": "mint",
+        "mint- finely chopped": "mint",
+        "springs of rosemary": "rosemary",
+        "of rosemary": "rosemary",
+        "chopped spinach leaves": "spinach",
+        "baby spinach- finely chopped": "spinach",
+        "fresh spinach leaves, chopped": "spinach",
+        "chopped spinach": "spinach",
+        "ground nutmeg": "nutmeg",
+        "nutmeg": "nutmeg",
+        "fresh nutmeg, optional-": "nutmeg",
+        "butter, melted": "butter",
+        "unsalted butter": "butter",
+        "butter, melted-90 gr tereya\u011f\u0131, eritilmi\u015f": "butter",
+        "butter, cut into cubes": "butter",
+        "butter, very cold": "butter",
+        "butter, softened": "butter",
+        "butter": "butter",
+        "unsalted butter, chopped": "butter",
+        "cold butter, diced": "butter",
+        "ham, cut into stripes":"ham",
+        "cocoa powder, for dusting":"cocoa",
+        "sunflower seeds-50 gr ay\u00e7ekirde\u011fi":"sunflower",
+        "sunflower seeds-": "sunflower",
+        "shredded coconut": "coconut",
+        "pinenut-roasted": "pinenut",
+        "grated zucchini": "zucchini",
+        "zucchini, sliced- dilimlenmi\u015f 1 kabak": "zucchini",
+        "ground cinnamon-- 5 gr \u00f6\u011f\u00fct\u00fclm\u00fc\u015f tar\u00e7\u0131n": "cinnamon",
+        "cinnamon": "cinnamon",
+        "ground cinnamon": "cinnamon",
+        "of cinnamon-": "cinnamon",
+        "lamb": "lamb",
+        "minced lean lamb": "lamb",
+        "rack of lamb": "lamb",
+        "bone-in leg of lamb": "lamb",
+        "baby carrot": "carrot",
+        "carrots, peeled and sliced": "carrot",
+        "baby carrots": "carrot",
+        "mussels": "mussels",
+        "turkey": "turkey",
+        "milk": "milk",
+        "shallot, minced": "shallot",
+        "shallot": "shallot",
+        "tablespoons brandy, optional": "brandy",
+        "rice": "rice",
+        "asparagus, snap off and discard the woody ends.- 250 gr ku\u015fkonmaz, odunsu u\u00e7lar\u0131 kopar\u0131n ve at\u0131n.": "asparagus",
+        "asparagus -500 gr ku\u015fkonmaz": "asparagus",
+        "asparagus": "asparagus",
+        "asparagus, cut into small pieces": "asparagus",
+        "marinade": "marinade",
+        "water": "water",
+        "boiling water, to mix": "water",
+        "warm water": "water",
+        "warm water (38-43 c)": "water",
+        "of chilled water": "water",
+        "starch +20 ml water (to dissolve starch)": "water",
+        "pint water": "water",
+        "water, luke warm": "water",
+        "chilled water": "water",
+        "warm water- 300ml \u0131l\u0131k su": "water",
+        "sesame seeds": "sesame seed",
+        "sesame seed": "sesame seed",
+        "honey": "honey",
+        "honey or agave syrup": "honey",
+        "of honey": "honey",
+        "honey or agave": "honey",
+        "honey-1/2 \u00e7ay ka\u015f\u0131\u011f\u0131 bal": "honey",
+        "eggplants": "eggplant",
+        "pistachio": "",
+        "parmesan, grated": "parmesan",
+        "parmesan cheese, grated": "parmesan",
+        "crumbled feta cheese, divided-100 gr ufalanm\u0131\u015f beyaz peynir, b\u00f6l\u00fcnm\u00fc\u015f": "feta",
+        "crumbled feta cheese, divided-100 gr ufalanm\u0131\u015f beyaz peynir, b\u00f6l\u00fcnm\u00fc\u015f": "feta",
+        "feta": "feta",
+        "feta cheese, shredded": "feta",
+        "rolled oats": "oat",
+        "rolled oats -300 gr yulaf ezmesi": "oat",
+        "dried paprika": "paprika",
+        "paprika": "paprika",
+        "dried  paprika": "paprika",
+        "smoked paprika": "paprika",
+        "whole artichokes": "artichokes",
+        "artichokes": "artichokes",
+        "marinated artichokes drain and roughly chopped-350 gr marine edilmi\u015f enginar s\u00fcz\u00fcl\u00fcr ve kabaca do\u011fran\u0131r": "artichokes",
+        "artichokes, chopped": "artichokes",
+        "agave": "agave",
+        "bay leaf": "bay",
+        "bay leaves": "bay",
+        "large shrimp": "shrimp",
+        "of coconut oil-60 gr": "coconut oil",
+        "coconut oil": "coconut oil",
+        "coconut oil-60 gr hindistancevizi ya\u011f\u0131": "coconut oil",
+        "whole duck": "duck",
+        "yellow squashes": "squash",
+        "dried figs, diced": "fig",
+        "maple syrup-100 ml ak\u00e7aa\u011fa\u00e7 \u015furubu": "maple syrup",
+        "maple syrup 25 g": "maple syrup",
+        "toasted pine nuts-2 yemek ka\u015f\u0131\u011f\u0131 k\u0131zarm\u0131\u015f \u00e7am f\u0131st\u0131\u011f\u0131": "pine",
+        "pinenut": "pine",
+        "parmesan, grated": "parmesan",
+        "parmesan cheese, grated": "parmesan",
+        "raisins": "raisin",
+        "of raisins": "raisin",
+        "raw pumpkin seeds-50 gr \u00e7i\u011f kabak \u00e7ekirde\u011fi": "pumpkin seed",
+        "pumpkin seeds": "pumpkin seed",
+        "cheddar cheese, grated-": "cheddar",
+        "cheddar cheese, grated": "cheddar",
+        "capers, finely chopped": "capers",
+        "shaved coconut-50 gr hindistan cevizi rendesi": "coconut",
+        "coconut": "coconut",
+        "warm-80 g \u0131l\u0131k s\u00fct": "",
+        "corn starch": "",
+        "good-quality apples": "apple",
+        "apples, sliced": "apple",
+        "apple puree-160 gr elma p\u00fcresi": "apple",
+        "apple, thinly sliced   350 g": "apple",
+        "apples-": "apple",
+        "apple  100g": "apple",
+        "apple juice to wet the oats": "apple",
+        "grated mozzarella": "mozzarella",
+        "shredded mozzarella": "mozzarella",
+        "dried oregano": "oregano",
+        "of fresh oregano": "oregano",
+        "dried cumin": "cumin",
+        "whole peppercorns": "pepper",
+        "yellow bell pepper, diced": "bell pepper",
+        "yellow bell pepper, diced": "bell pepper",
+        "red bell pepper, diced": "bell pepper",
+        "small pepper, deseeded and diced": "bell pepper",
+        "freshly \u2013 cracked black pepper": "pepper",
+        "walnuts, coarsely chopped": "walnut",
+        "chopped walnuts": "walnut",
+        "walnuts, finely chopped": "walnut",
+        "finely chopped walnuts": "walnut",
+        "poppy seeds": "poppy seed",
+        "fresh dill": "dill",
+        "of fresh dill": "dill",
+        "dill, finely chopped": "dill",
+        "bourbon": "bourbon",
+        "all spice": "all spice",
+        "olive oil-1 yemek ka\u015f\u0131\u011f\u0131 zeytinya\u011f\u0131": "olive oil",
+        "olive oil-": "olive oil",
+        "olive oil": "olive oil",
+        "olive oil-2 yemek ka\u015f\u0131\u011f\u0131 zeytinya\u011f\u0131": "olive oil",
+        "olive oil -1 yemek ka\u015f\u0131\u011f\u0131 zeytinya\u011f\u0131": "olive oil",
+        "fish fillets (sea bass)": "bass",
+        "whole sea bass": "bass",
+        "fruits of your choice": "fruits",
+        "graham cracker crumbs": "",
+        "salmon fillet": "salmon",
+        "boneless, skinless salmon": "salmon",
+        "salmon fillets": "salmon",
+        "burrata cheese (2-3 balls)- 250 gr burrata peyniri (2-3 top)": "burrata",
+        "fresh strawberries, halved": "strawberry",
+        "strawberries 500 g": "strawberry",
+        "blueberries": "blueberriy",
+        "dried blueberries-- 60 gr kurutulmu\u015f yaban mersini": "blueberry",
+        "sirloin  or  rump steak": "steak",
+        "sirloin steak": "steak",
+        "fresh green salad-\u00bd fincan taze ye\u015fil salata": "green salad",
+        "arugula -2 bardak roka": "arugula",
+        "streaky bacon or panchetta slices": "bacon",
+        "dried fennel seeds, crushed": "fennel",
+        "fennel \u2013thinly sliced": "fennel",
+        "sole fish": "sole",
+        "white wine": "wine",
+        "mascarpone cheese 100 g": "mascarpone",
+        "eggs + 2 egg yolks, room temperature": "egg",
+        "dried cayenne powder": "cayenne",
+        "courgettes, peeled and sliced": "courgette",
+        "of frozen puff pastry": "puff pastry",
+        "dried apricots": "apricot",
+        "ricotta cheese-250 gr ricotta peyniri": "ricotta",
+        "fresh firm ricotta": "ricotta",
+        "natural yoghurt": "yoghurt",
+        "dried lasagne sheet": "lasagne",
+        "hazelnuts": "hazelnut",
+        "whole sea bream": "bream",
+        "dates, mashed": "date",
+        "of whole wheat bread, finely coarsed": "bread",
+        "fresh whole wheat breadcrumbs": "bread",
+        "fresh or frozen bluberry": "blueberry",
+        "mulberries": "mulberry",
+        "i\u0307lave tereya\u011f": "tereya",
+        "pear   100g": "pear",
+        "courgette- \u00a0thinly sliced lengthways\u00a0about 24 slices": "courgette",
+        "bittersweet or semisweet chocolate, roughly chopped": "chocolate",
+        "dark chocolate": "chocolate",
+        "chia seeds": "chia seed",
+        "banana, mashed": "banana",
+        "chives, finely chopped": "chives",
+        "phyllo dough 12 yaprak yufka hamuru": "phyllo dough",
+        "frozen peas-thawed": "pea",
+        "": "",
     }
 
     recipe["quantities"] = []
@@ -276,9 +646,30 @@ def parse_ingredients(recipe: list, ingr_labels_raw_to_r1m: dict, ingr_labels_r1
 
     return recipe, unmatched_ingredient_labels
 
+def mapUnmatchedToR1m(unmatched_ingredient_labels, fg_labels):
+    ingr_labels_raw_to_r1m = {}
+    ingr_labels_r1m_to_raw = {}
+
+    for unmatched_label in unmatched_ingredient_labels:
+        if not unmatched_label:
+            continue
+        ingr_labels_raw_to_r1m[unmatched_label] = []
+        for fg_label in fg_labels:
+            if fg_label not in ingr_labels_r1m_to_raw:
+                ingr_labels_r1m_to_raw[fg_label] = []
+            if unmatched_label in fg_label:
+                ingr_labels_raw_to_r1m[unmatched_label].append(fg_label)
+                ingr_labels_r1m_to_raw[fg_label].append(unmatched_label)
+
+    return ingr_labels_raw_to_r1m, ingr_labels_r1m_to_raw
+
 def main():
     ARCELIC_RECIPES_DIR_PATH = os.path.abspath("./inputs/arcelik_recipe/Revize Edilen Tarifler/")
     GRAPH_NODES_PATH = os.path.abspath("./inputs/graph/nodes_191120.csv")
+
+    RAW_TO_R1M_PATH = os.path.abspath("./outputs/arcelic_raw_to_r1m_unreviewed.json")
+    R1M_TO_RAW_PATH = os.path.abspath("./outputs/arcelic_r1m_to_raw_unreviewed.json")
+
 
     unmatched_ingredient_labels = []
 
@@ -295,81 +686,29 @@ def main():
         recipe, _unmatched_ingredient_labels = parse_ingredients(recipe, ingr_labels_raw_to_r1m, ingr_labels_r1m_to_raw)
         unmatched_ingredient_labels += _unmatched_ingredient_labels
 
+
+
     print(len(unmatched_ingredient_labels))
     unmatched_ingredient_labels = list(set(unmatched_ingredient_labels))
     print(len(unmatched_ingredient_labels))
+    # try normalizing with spacy
+    # unmatched_ingredient_labels = [extract_main_keyword_singular(ingredient) for ingredient in unmatched_ingredient_labels]
+    # print(len(unmatched_ingredient_labels))
 
-
-    sugar = []
-    lemon = []
-    flour = []
-    onion = []
-    parsley = []
-    basil = []
-    tomato = []
-    vanilla = []
-    chilli = []
-    coriander = []
-    oatmeal = []
-    cream = []
-    thyme = []
-    almond = []
-    yeast = []
-    vinegar = []
-
-    for unmatched_ingredient in unmatched_ingredient_labels:
-        if "sugar" in unmatched_ingredient:
-            sugar.append(unmatched_ingredient)
-        if "lemon" in unmatched_ingredient:
-            lemon.append(unmatched_ingredient)
-        if "flour" in unmatched_ingredient:
-            flour.append(unmatched_ingredient)
-        if "onion" in unmatched_ingredient:
-            onion.append(unmatched_ingredient)
-        if "parsley" in unmatched_ingredient:
-            parsley.append(unmatched_ingredient)
-        if "basil" in unmatched_ingredient:
-            basil.append(unmatched_ingredient)
-        if "tomato" in unmatched_ingredient:
-            tomato.append(unmatched_ingredient)
-        if "vanilla" in unmatched_ingredient:
-            vanilla.append(unmatched_ingredient)
-        if "cream" in unmatched_ingredient:
-            cream.append(unmatched_ingredient)
-        if "coriander" in unmatched_ingredient:
-            coriander.append(unmatched_ingredient)
-        if "chilli" in unmatched_ingredient:
-            chilli.append(unmatched_ingredient)
-        if "thyme" in unmatched_ingredient:
-            thyme.append(unmatched_ingredient)
-        if "almond" in unmatched_ingredient:
-            almond.append(unmatched_ingredient)
-        if "oatmeal" in unmatched_ingredient:
-            oatmeal.append(unmatched_ingredient)
-        if "yeast" in unmatched_ingredient:
-            yeast.append(unmatched_ingredient)
-        if "vinegar" in unmatched_ingredient:
-            vinegar.append(unmatched_ingredient)
-
-    unmatched_ingredient_labels.append(sugar)
-    unmatched_ingredient_labels.append(lemon)
-    unmatched_ingredient_labels.append(flour)
-    unmatched_ingredient_labels.append(onion)
-    unmatched_ingredient_labels.append(parsley)
-    unmatched_ingredient_labels.append(basil)
-    unmatched_ingredient_labels.append(tomato)
-    unmatched_ingredient_labels.append(vanilla)
-    unmatched_ingredient_labels.append(cream)
-    unmatched_ingredient_labels.append(coriander)
-    unmatched_ingredient_labels.append(chilli)
-    unmatched_ingredient_labels.append(thyme)
-    unmatched_ingredient_labels.append(almond)
-    unmatched_ingredient_labels.append(oatmeal)
-    unmatched_ingredient_labels.append(yeast)
-    unmatched_ingredient_labels.append(vinegar)
-
+    executeHardcodedIngredientMappings(unmatched_ingredient_labels)
     with open(os.path.abspath("./outputs/arcelic_raw_ingredient_labels.json"), "w") as json_file:
         json.dump(unmatched_ingredient_labels, json_file, indent=2)
+
+    ingr_labels_raw_to_r1m, ingr_labels_r1m_to_raw = mapUnmatchedToR1m(unmatched_ingredient_labels, fg_ingredients)
+
+    with open(RAW_TO_R1M_PATH, "w") as raw_to_r1m_file:
+        json.dump(ingr_labels_raw_to_r1m, raw_to_r1m_file, indent=2)
+    with open(R1M_TO_RAW_PATH, "w") as r1m_to_raw_file:
+        json.dump(ingr_labels_r1m_to_raw, r1m_to_raw_file, indent=2)
+
+
+
+
 
 if __name__ == "__main__":
     main()
