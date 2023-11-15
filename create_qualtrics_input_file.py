@@ -8,7 +8,7 @@ class IngredientSubstitutionQuestionBlock:
         "Would exchanging the ingredients require major changes to the recipe?"
     )
     Q_SUBS_SELECTION = (
-        "Which of the following substitutions would you chose for @@main_ingredient@@?"
+        "Which of the following substitutions would you chose for \"@@main_ingredient@@\"?"
     )
 
     TEXT_CONTENT = """[[Block:@@sample_id@@]]
@@ -101,7 +101,7 @@ no
 
 [[Question:TE]]
 [[ID:MC@@sample_id@@mainingr]]
-Is @@main_ingredient@@ the main ingredient of the recipe? If not, which one is the main ingredient?
+Is "@@main_ingredient@@" the main ingredient of the recipe? If not, which one is the main ingredient?
 
 [[Question:MC:SingleAnswer:Horizontal]]
 [[ID:MC@@sample_id@@selection]]
