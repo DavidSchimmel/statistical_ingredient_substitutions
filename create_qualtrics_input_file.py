@@ -3,12 +3,12 @@ import os
 
 
 class IngredientSubstitutionQuestionBlock:
-    Q_FIT_TEXT = "Does the suggested substitution fit the recipe?"
+    Q_FIT_TEXT = "Does the suggested substitution <b>fit the recipe</b>?"
     Q_MAJOR_CHANGE_TEXT = (
         "Would exchanging the ingredients require major changes to the recipe?"
     )
     Q_SUBS_SELECTION = (
-        "Which of the following substitutions would you chose for \"@@main_ingredient@@\"?"
+        "Which of the following substitutions would you chose for <b>\"@@main_ingredient@@\"</b>?"
     )
 
     TEXT_CONTENT = """[[Block:@@sample_id@@]]
@@ -49,16 +49,16 @@ MC@@sample_id@@selection. @@Q_SUBS_SELECTION@@
 [[Block:@@sample_id@@]]
 
 [[Question:Text]]
-Title - @@recipe_title@@
+Title: <b>@@recipe_title@@</b>
 
 [[Question:Text]]
-Ingredient List - @@ingredient_list@@
+<b>Ingredients:</b> </br> - @@ingredient_list@@
 
 [[Question:Text]]
-Instruction List - @@instruction_list@@
+<b>Instructions:</b> </br> - @@instruction_list@@
 
 [[Question:Text]]
-Suggested Substitution - (@@gt_sub@@)
+Suggested Substitution: <b>@@gt_sub@@</b>
 
 [[Question:MC:SingleAnswer:Horizontal]]
 [[ID:MC@@sample_id@@fit]]
@@ -70,14 +70,14 @@ no
 
 [[Question:MC:SingleAnswer:Horizontal]]
 [[ID:MC@@sample_id@@tastechange]]
-Does this substitution imply a major change to the meal's taste?
+Does this substitution imply a major change to the meal's <b>taste</b>?
 
 [[Choices]]
 yes
 no
 [[Question:MC:SingleAnswer:Horizontal]]
 [[ID:MC@@sample_id@@nutruientschange]]
-Does this substitution imply a major change to the meal's nutritional profile?
+Does this substitution imply a major change to the meal's <b>nutritional profile</b>?
 
 [[Choices]]
 yes
@@ -85,7 +85,7 @@ no
 
 [[Question:MC:SingleAnswer:Horizontal]]
 [[ID:MC@@sample_id@@processchange]]
-Does this substitution require major modifications to the cooking process (i.e. instruction set)?
+Does this substitution require major modifications to the <b>cooking process</b> (i.e. instruction set)?
 
 [[Choices]]
 yes
@@ -93,7 +93,7 @@ no
 
 [[Question:MC:SingleAnswer:Horizontal]]
 [[ID:MC@@sample_id@@categorychange]]
-Does the substitution change the food category from the exchanged ingredient (i.e. swapping a meat for a vegetarian option or changing ingredients that do not cause the same cross-allergies)?
+Does the substitution change the <b>food category</b> from the exchanged ingredient (i.e. swapping a meat for a vegetarian option or changing ingredients that do not cause the same cross-allergies)?
 
 [[Choices]]
 yes
@@ -101,7 +101,7 @@ no
 
 [[Question:TE]]
 [[ID:MC@@sample_id@@mainingr]]
-Is "@@main_ingredient@@" the main ingredient of the recipe? If not, which one is the main ingredient?
+Is <b>"@@main_ingredient@@"</b> the main ingredient of the recipe? If not, which one is the main ingredient?
 
 [[Question:MC:SingleAnswer:Horizontal]]
 [[ID:MC@@sample_id@@selection]]
@@ -149,8 +149,8 @@ What substitution do you suggest instead (if you answered other)?
         text_content = (
             text_content.replace("@@sample_id@@", str(self.sample_id))
             .replace("@@recipe_title@@", self.recipe_title)
-            .replace("@@ingredient_list@@", ";\n".join(self.recipe_ingredient_list))
-            .replace("@@instruction_list@@", ";\n".join(self.recipe_instruction_list))
+            .replace("@@ingredient_list@@", "</br> - ".join(self.recipe_ingredient_list))
+            .replace("@@instruction_list@@", "</br> - ".join(self.recipe_instruction_list))
             .replace("@@gt_sub@@", " -> ".join(self.gt_sub))
             .replace("@@Q_FIT_TEXT@@", self.Q_FIT_TEXT)
             .replace("@@Q_MAJOR_CHANGE_TEXT@@", self.Q_MAJOR_CHANGE_TEXT)
@@ -193,7 +193,7 @@ def createQualtrixSurveyTexts(survey_data, chunk_limit = 50, do_use_advanced = T
     return survey_strings
 
 
-if __name__ == "__main__":
+if __name__  == "__main__":
     DRY_RUN = False
 
     QUALTRICS_SURVEY_DATA_ORIG_FILE_PATH = os.path.abspath("./inputs/suvey_question_set_500.json")
@@ -201,7 +201,7 @@ if __name__ == "__main__":
     QUALTRICS_SURVEY_TEXT_DIR_PATH = os.path.abspath("./outputs/survey_import_files/")
 
     with open(QUALTRICS_SURVEY_DATA_FILE_PATH, "r") as qualstrics_data_file:
-        survey_data = json.load(qualstrics_data_file)
+        survey_data = json.load(qualstrics_data_file)[:2]
 
     survey_text_contents = createQualtrixSurveyTexts(
         survey_data, 50, True
