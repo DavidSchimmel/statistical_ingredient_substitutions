@@ -5,6 +5,7 @@ __pycache__/
 
 inputs/*
 outputs/*
+survey_results/*
 
 # C extensions
 *.so

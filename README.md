@@ -14,5 +14,7 @@
   - `graph/nodes_191120.csv` [download form flavorgraph](https://github.com/lamypark/FlavorGraph/blob/master/input/nodes_191120.csv) contains the list of nodes in flavour graph and some additional features; relevant info can be obtained by the `get_graph_nodes` function
   - the train, test, and val sets are provided by facebook and their [gismo project](https://github.com/facebookresearch/gismo/tree/main/gismo), the graph nodes are provided by [flavorgraph](https://github.com/lamypark/FlavorGraph)
 
+- recipe1m seems to [live on Kaggle](https://www.kaggle.com/datasets/kmader/layer-urls/) now
+
 - however even though it might run with only the above described files, computation can take a long time. Using the following pre-processed files can help:
   - `./outputs/mutual_info_dict_with_self_info.pkl`
