@@ -15,6 +15,9 @@ class questionTypeSuffixes(Enum):
     SUBSELECTION = "selection"
     USERSUGGESTION = "usersuggestion"
 
+INDIVIDUAL_RESPONSES = "individual_responses"
+CONSENSUAL_ANSWERS = "consensual_answers"
+
 def main():
     SURVEY_RESULTS_PATH = os.path.abspath("./survey_results")
     FUSED_RESULTS_PATH = os.path.abspath("./survey_results/fused_results.pkl")
