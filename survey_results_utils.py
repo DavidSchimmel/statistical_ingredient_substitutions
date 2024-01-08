@@ -1,4 +1,5 @@
 import csv
+import json
 import pickle
 import os
 import re
@@ -20,16 +21,30 @@ CONSENSUAL_ANSWERS = "consensual_answers"
 
 def main():
     SURVEY_RESULTS_PATH = os.path.abspath("./survey_results")
-    FUSED_RESULTS_PATH = os.path.abspath("./survey_results/fused_results.pkl")
+    FUSED_RESULTS_PATH = os.path.abspath("./survey_results_processed/fused_results.pkl")
+    SURVEY_QUESTION_SET_PATH = os.path.abspath("./outputs/survey final file/survey_recipes_enriched.json")
+    SURVEY_SAMPLES_WITH_ANSWERS_PATH = os.path.abspath("./survey_results_processed/survey_samples_with_answers.pkl")
 
-    fused_raw_results = fuseResultsChunks(SURVEY_RESULTS_PATH)
+    if not os.path.exists(FUSED_RESULTS_PATH):
+        fused_raw_results = fuseResultsChunks(SURVEY_RESULTS_PATH)
 
-    results_dict = generateResponseDictionary(fused_raw_results)
+        results_dict = generateResponseDictionary(fused_raw_results)
 
-    results_dict = addConsensualAnswers(results_dict)
+        results_dict = addConsensualAnswers(results_dict)
+        with open(FUSED_RESULTS_PATH, "wb") as fused_results_file:
+            pickle.dump(results_dict, fused_results_file)
+    else:
+        with open(FUSED_RESULTS_PATH, "rb") as fused_results_file:
+            results_dict = pickle.load(fused_results_file)
 
-    with open(FUSED_RESULTS_PATH, "wb") as fused_results_file:
-        pickle.dump(results_dict, fused_results_file)
+    if not os.path.exists(SURVEY_SAMPLES_WITH_ANSWERS_PATH):
+        with open(SURVEY_QUESTION_SET_PATH, 'r') as file:
+            survey_samples = json.load(file)
+
+        survey_samples_with_answer = addAnswersToSurveySamples(results_dict, survey_samples)
+
+        with open(SURVEY_SAMPLES_WITH_ANSWERS_PATH, "wb") as survey_samples_with_answers_file:
+            pickle.dump(survey_samples_with_answer, survey_samples_with_answers_file)
 
     print("preprocessing done")
 
@@ -108,13 +123,13 @@ def addConsensualAnswers(results_dict):
     for sample_id, result in list(results_dict.items()):
         individual_responses = result["individual_responses"]
 
-        does_fit = getConensus(individual_responses[questionTypeSuffixes.FIT.value])
-        does_change_taste = getConensus(individual_responses[questionTypeSuffixes.RECIPE_TASTE.value])
-        does_change_nutrition = getConensus(individual_responses[questionTypeSuffixes.RECIPE_NUTRITION.value])
-        does_change_process = getConensus(individual_responses[questionTypeSuffixes.RECIPE_PROCESS.value])
-        does_change_category = getConensus(individual_responses[questionTypeSuffixes.RECIPE_CATEGORY.value])
+        does_fit = getConesnsus(individual_responses[questionTypeSuffixes.FIT.value])
+        does_change_taste = getConesnsus(individual_responses[questionTypeSuffixes.RECIPE_TASTE.value])
+        does_change_nutrition = getConesnsus(individual_responses[questionTypeSuffixes.RECIPE_NUTRITION.value])
+        does_change_process = getConesnsus(individual_responses[questionTypeSuffixes.RECIPE_PROCESS.value])
+        does_change_category = getConesnsus(individual_responses[questionTypeSuffixes.RECIPE_CATEGORY.value])
         is_main_ingredient = individual_responses[questionTypeSuffixes.MAIN.value]
-        sub_selection = getConensus(individual_responses[questionTypeSuffixes.SUBSELECTION.value], True)
+        sub_selection = getConesnsus(individual_responses[questionTypeSuffixes.SUBSELECTION.value], True)
         user_suggestions = individual_responses[questionTypeSuffixes.USERSUGGESTION.value]
 
         result["consensual_answers"] = {
@@ -132,7 +147,7 @@ def addConsensualAnswers(results_dict):
 
     return results_dict
 
-def getConensus(answers, is_multiple_choice = False):
+def getConesnsus(answers, is_multiple_choice = False):
     """Returns the consensus value for the presented answers.
 
     Args:
@@ -162,6 +177,20 @@ def getConensus(answers, is_multiple_choice = False):
             consensus = most_common[0][0]
 
     return consensus
+
+def addAnswersToSurveySamples(results_dict, survey_samples):
+    recipes = []
+
+    for i in range(len(survey_samples)):
+        result = results_dict[i]
+        sample = survey_samples[i][1]
+        sample_sub = survey_samples[i][0]
+        sample["individual_responses"] = result["individual_responses"]
+        sample["consensual_answers"] = result["consensual_answers"]
+        sample["sample_sub"] = sample_sub
+        recipes.append(sample)
+
+    return recipes
 
 if __name__ == "__main__":
     main()
