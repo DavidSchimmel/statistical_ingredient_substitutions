@@ -329,11 +329,11 @@ def inspect_arc_only_splits():
 def main():
     DO_CREATE_PURE_SPLIST = False
     DO_CREATE_PURE_COLD_SPLITS = False
-    DO_CREATE_FIVE_FOLD_SPLIST = True
+    DO_CREATE_FIVE_FOLD_SPLIST = False
 
     TMP_TOTAL_ARCELIK_ONLY_COMMENTS_PATH = "./outputs/new_comments/tmp_total_arcelik_only_comments.pkl"
 
-    if not os.path.exists(TMP_TOTAL_ARCELIK_ONLY_COMMENTS_PATH):
+    if os.path.exists(TMP_TOTAL_ARCELIK_ONLY_COMMENTS_PATH):
         with open(TMP_TOTAL_ARCELIK_ONLY_COMMENTS_PATH, 'rb') as file:
             total_arcelik_only_samples = pickle.load(file)
     else:
@@ -351,6 +351,33 @@ def main():
         with open(TMP_TOTAL_ARCELIK_ONLY_COMMENTS_PATH, "wb") as file:
             pickle.dump(total_arcelik_only_samples, file)
 
+    # * are negative samples from the original sample sets?
+    gismo_train, gismo_val, gismo_test = loadGismoSplits()
+    survey_samples_with_answers = loadSurveySamplesWithAnswers()
+    negative_samples = getNegativeSamples(survey_samples_with_answers)
+    negative_samples_from_r1msubs = [] # there are 9 of them
+    negative_samples_not_from_r1msubs = [] # and 20 of those
+    for negative_sample in negative_samples:
+        sample_sub = (negative_sample["sample_sub"][0], negative_sample["sample_sub"][1])
+        sample_recipe_id = negative_sample["id"]
+        already_found = False
+        for train_sample in gismo_train:
+            if train_sample["subs"] == sample_sub and train_sample["id"] == sample_recipe_id:
+                negative_samples_from_r1msubs.append(negative_sample)
+                already_found = True
+                break
+        for val_sample in gismo_val:
+            if val_sample["subs"] == sample_sub and val_sample["id"] == sample_recipe_id:
+                negative_samples_from_r1msubs.append(negative_sample)
+                already_found = True
+                break
+        for test_sample in gismo_test:
+            if test_sample["subs"] == sample_sub and test_sample["id"] == sample_recipe_id:
+                negative_samples_from_r1msubs.append(negative_sample)
+                already_found = True
+                break
+        if not already_found:
+            negative_samples_not_from_r1msubs.append(negative_sample)
 
 
     # arcelik_only_recipe_ids = list(set([sample["id"] for sample in total_arcelik_only_samples]))
