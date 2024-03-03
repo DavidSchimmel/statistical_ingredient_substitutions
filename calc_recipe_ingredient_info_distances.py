@@ -783,8 +783,8 @@ def main():
         # test_for_recipe("b78b1bffd0", extended_recipes, recipe_ingredient_df_bool, MUTUAL_INFO_DICT_PATH)
 
 
-        CONTINUE_GETTING_MORE_MUTUL_INFO = False
-        if CONTINUE_GETTING_MORE_MUTUL_INFO:
+        CONTINUE_GETTING_MORE_MUTUAL_INFO = False
+        if CONTINUE_GETTING_MORE_MUTUAL_INFO:
             all_mutual_info = get_all_mutual_info(recipe_ingredient_df_bool, MUTUAL_INFO_DICT_PATH)
 
         Add_SELF_INFO_TO_MUTUAL_INFO_DICT = False
