@@ -69,3 +69,19 @@ This reposytory contains various preprocessing scripts, analysis scripts and uti
     - this produces the files that are required to train GISMo with the provided negative sampling strategies
 
   - for both files, check the constants in the `main()` function to see path and control flow
+
+## Workflow for experiments
+
+### Negative sampling
+
+- load the prerequisits and run the scripts `recipe1m\getting_layer_1.py` and then `recipe1m\add_quantities_to_extended_recipes.py`
+- import the prerequisites for `calc_recipe_ingredient_info_distances`, run the script until you have the `./outputs/mutual_info_dict_with_self_info.pkl`
+- import the other prerequisites for `precalc_all_extended_recipe_2nd_order_cor_recs` and run that file (use the `train_comments_susb` (and test and val comments) for GISMo or for the Arcsubs, depending on which model you want to train)
+- copy the resulting files `./outputs/precalced_substitutabilities/cos_similarities.pt`, `./outputs/precalced_substitutabilities/sample_2_row.pkl`, `./outputs/precalced_substitutabilities/ingr_2_col.pkl`  into GISMo into a directory `gismo\checkpoints\precalculated_substitutabilities` in the GISMo repository on the branch [um_mt_extensions](https://github.com/DavidSchimmel/gismo/tree/um_mt_extensions)
+
+### Graph generation
+
+- load the prerequisits and run the scripts `recipe1m\getting_layer_1.py` and then `recipe1m\add_quantities_to_extended_recipes.py`
+- copy the generated `./recipe1m/output/extended_recipes_with_quantities.json` file into the `data\input` path in the [graph generation library](https://github.com/DavidSchimmel/structured_recipe1m), load the libraries other inputs and run the files
+- from there, copy the desired nodes and edges files that can be found in that module's `data\output` directories into the [GISMo repo](https://github.com/DavidSchimmel/gismo/tree/um_mt_extensions) to the directory `gismo\checkpoints\graph`, change the names to `edges_191120.csv` and `nodes_191120.csv`
+- then follow the instructions in the GISMo repo and run the experiments
