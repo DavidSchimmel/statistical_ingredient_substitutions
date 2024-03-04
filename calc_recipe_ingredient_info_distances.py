@@ -720,7 +720,7 @@ def main():
     VAL_COMMENTS_PATH = os.path.abspath("./inputs/val_comments_subs.pkl") # validation recipes with substitutions
     GRAPH_NODES_PATH = os.path.abspath("./inputs/graph/nodes_191120.csv")
 
-    RECIPE1M_PATH = os.path.abspath("./inputs/layer1.json") #currently not needed
+    #RECIPE1M_PATH = os.path.abspath("./inputs/layer1.json") #currently not needed
 
     # ALL_PAIRS_PATH = os.path.abspath("./outputs/all_pairs.pkl")
     # ALL_MUTUAL_INFO_PATH = os.path.abspath("./outputs/all_mutual_info.pkl")
@@ -783,11 +783,11 @@ def main():
         # test_for_recipe("b78b1bffd0", extended_recipes, recipe_ingredient_df_bool, MUTUAL_INFO_DICT_PATH)
 
 
-        CONTINUE_GETTING_MORE_MUTUAL_INFO = False
+        CONTINUE_GETTING_MORE_MUTUAL_INFO = True
         if CONTINUE_GETTING_MORE_MUTUAL_INFO:
             all_mutual_info = get_all_mutual_info(recipe_ingredient_df_bool, MUTUAL_INFO_DICT_PATH)
 
-        Add_SELF_INFO_TO_MUTUAL_INFO_DICT = False
+        Add_SELF_INFO_TO_MUTUAL_INFO_DICT = True
         if Add_SELF_INFO_TO_MUTUAL_INFO_DICT:
             mutual_info_dict = add_self_information_to_all_mutual_info(MUTUAL_INFO_DICT_PATH, MUTUAL_INFO_DICT_PATH_WITH_SELF_INFO)
 
